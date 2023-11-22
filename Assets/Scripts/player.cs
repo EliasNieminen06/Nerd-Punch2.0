@@ -3,12 +3,21 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
+    private int currentHealth;
     private float horizontal;
     private float speed = 4f;
     private float jumpingPower = 8f;
     private bool isFacingRight = true;
-
-    private bool isPunching = false;
+    private float attackRange = 0.5f;
+    private int attackDamage = 10;
+    private int maxHealth = 100;
+    private float attackRate = 2f;
+    private float nextAttackTime = 0f;
+    private float knockBackForce = 10;
+    private float knockBackTimer = 0f;
+    private float knockBackTotalTime = 0.2f;
+    private bool knockFromRight;
+    private AudioSource audioSource;
 
     [SerializeField] private Animator anim;
 
@@ -16,9 +25,20 @@ public class player : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
+    [SerializeField] private Transform attackPoint;
+    [SerializeField] private LayerMask playerLayers;
+
     [SerializeField] private string inputNameHorizontal;
     [SerializeField] private string inputNameJump;
     [SerializeField] private string inputNameAttack;
+
+    [SerializeField] private AudioClip[] punchSounds;
+
+    private void Start()
+    {
+        currentHealth = maxHealth;
+        audioSource = this.GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -34,9 +54,20 @@ public class player : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
-        if (Input.GetButtonDown(inputNameAttack) && !isPunching)
+        if (Time.time >= nextAttackTime)
         {
-            anim.SetTrigger("attack");
+            if (Input.GetButtonDown(inputNameAttack))
+            {
+                anim.SetTrigger("attack");
+
+                Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
+                foreach(Collider2D player in hitPlayers)
+                {
+                    player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
+                }
+                nextAttackTime = Time.time + 1f / attackRate;
+            }
+
         }
 
         Flip();
@@ -44,7 +75,24 @@ public class player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        if (knockBackTimer <= 0)
+        {
+            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        }
+        else
+        {
+            if(knockFromRight == true)
+            {
+                rb.velocity = new Vector2(-knockBackForce, 1);
+                Flip();
+            }
+            if (knockFromRight == false)
+            {
+                rb.velocity = new Vector2(knockBackForce, 1);
+                Flip();
+            }
+            knockBackTimer -= Time.deltaTime;
+        }
         if (horizontal != 0f)
         {
             this.anim.SetBool("run", true);
@@ -69,5 +117,50 @@ public class player : MonoBehaviour
             localScale.x *= -1f;
             transform.localScale = localScale;
         }
+    }
+
+    public void TakeDamage(int damage, Vector2 hitPos)
+    {
+        currentHealth -= damage;
+
+        int punchSound = Random.Range(0, punchSounds.Length);
+        audioSource.clip = punchSounds[punchSound];
+        audioSource.Play();
+
+        knockBackTimer = knockBackTotalTime;
+        if(hitPos.x > transform.position.x)
+        {
+            knockFromRight = true;
+        }
+        if (hitPos.x <= transform.position.x)
+        {
+            knockFromRight = false;
+        }
+
+        Invoke("hurtAnimation", 0.2f);
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void hurtAnimation()
+    {
+        anim.SetTrigger("hurt");
+    }
+
+    private void Die()
+    {
+        anim.SetBool("isDead", true);
+
+        this.enabled = false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint == null)
+            return;
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 }

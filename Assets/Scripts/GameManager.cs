@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject camera;
+    public GameObject scamera;
     public Canvas menu;
 
     private void Start()
     {
         menu.enabled = true;
-        camera.GetComponent<camera>().enabled = false;
-        camera.transform.position = new Vector2(0, 50);
+        scamera.GetComponent<camera>().enabled = false;
+        scamera.transform.position = new Vector2(0, 50);
     }
 
     private void Update()
@@ -27,6 +27,6 @@ public class GameManager : MonoBehaviour
 
     private void StartGame()
     {
-        camera.GetComponent<camera>().enabled = true;
+        scamera.GetComponent<camera>().enabled = true;
     }
 }
