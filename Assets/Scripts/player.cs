@@ -10,16 +10,15 @@ public class player : MonoBehaviour
 
     private bool isPunching = false;
 
+    [SerializeField] private Animator anim;
+
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
     [SerializeField] private string inputNameHorizontal;
     [SerializeField] private string inputNameJump;
-
-    [SerializeField] private Transform punchPoint;
-    [SerializeField] private float punchRadius = 0.5f;
-    [SerializeField] private string inputNamePunch;
+    [SerializeField] private string inputNameAttack;
 
     void Update()
     {
@@ -35,9 +34,9 @@ public class player : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
 
-        if (Input.GetButtonDown(inputNamePunch) && !isPunching)
+        if (Input.GetButtonDown(inputNameAttack) && !isPunching)
         {
-            StartCoroutine(Punch());
+            anim.SetTrigger("attack");
         }
 
         Flip();
@@ -46,6 +45,14 @@ public class player : MonoBehaviour
     private void FixedUpdate()
     {
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        if (horizontal != 0f)
+        {
+            this.anim.SetBool("run", true);
+        }
+        else
+        {
+            this.anim.SetBool("run", false);
+        }
     }
 
     private bool IsGrounded()
@@ -62,30 +69,5 @@ public class player : MonoBehaviour
             localScale.x *= -1f;
             transform.localScale = localScale;
         }
-    }
-    private IEnumerator Punch()
-    {
-        isPunching = true;
-        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(punchPoint.position, punchRadius);
-        foreach (Collider2D playerCollider in hitPlayers)
-        {
-            if (playerCollider.CompareTag("Player") && playerCollider.gameObject != gameObject)
-            {
-                Rigidbody2D otherPlayerRb = playerCollider.GetComponent<Rigidbody2D>();
-                if (otherPlayerRb != null)
-                {
-                    Vector2 knockbackDirection = (otherPlayerRb.transform.position - transform.position).normalized;
-                    otherPlayerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
-                }
-            }
-        }
-        yield return new WaitForSeconds(0.5f);
-        isPunching = false;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(punchPoint.position, punchRadius);
     }
 }
