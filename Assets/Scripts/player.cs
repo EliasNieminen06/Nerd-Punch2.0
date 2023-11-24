@@ -18,6 +18,7 @@ public class player : MonoBehaviour
     private float knockBackTotalTime = 0.2f;
     private bool knockFromRight;
     private AudioSource audioSource;
+    private bool gameStarted;
 
     [SerializeField] private Animator anim;
 
@@ -34,43 +35,57 @@ public class player : MonoBehaviour
 
     [SerializeField] private AudioClip[] punchSounds;
 
+    [SerializeField] private GameManager gameManager;
+
+    [SerializeField] private GameObject opponent;
+
     private void Start()
     {
         currentHealth = maxHealth;
         audioSource = this.GetComponent<AudioSource>();
+        gameStarted = false;
     }
 
     void Update()
     {
-        horizontal = Input.GetAxisRaw(inputNameHorizontal);
-
-        if (Input.GetButtonDown(inputNameJump) && IsGrounded())
+        if (gameStarted)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-        }
+            horizontal = Input.GetAxisRaw(inputNameHorizontal);
 
-        if (Input.GetButtonUp(inputNameJump) && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-        }
-
-        if (Time.time >= nextAttackTime)
-        {
-            if (Input.GetButtonDown(inputNameAttack))
+            if (Input.GetButtonDown(inputNameJump) && IsGrounded())
             {
-                anim.SetTrigger("attack");
-
-                Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
-                foreach(Collider2D player in hitPlayers)
-                {
-                    player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
-                }
-                nextAttackTime = Time.time + 1f / attackRate;
+                rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
             }
 
+        
+            if (Input.GetButtonUp(inputNameJump) && rb.velocity.y > 0f)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            }
+        
+            if (Time.time >= nextAttackTime)
+            {
+                if (Input.GetButtonDown(inputNameAttack))
+                {
+                    anim.SetTrigger("attack");
+
+                    Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
+                    foreach(Collider2D player in hitPlayers)
+                    {
+                        player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
+                    }
+                    nextAttackTime = Time.time + 1f / attackRate;
+                }
+
+            }
+        }
+        else
+        {
+            horizontal = 0;
         }
 
         Flip();
+        gameStarted = gameManager.gameStarted;
     }
 
     private void FixedUpdate()
@@ -81,7 +96,7 @@ public class player : MonoBehaviour
         }
         else
         {
-            if(knockFromRight == true)
+            if (knockFromRight == true)
             {
                 rb.velocity = new Vector2(-knockBackForce, 1);
                 Flip();
@@ -153,7 +168,7 @@ public class player : MonoBehaviour
     private void Die()
     {
         anim.SetBool("isDead", true);
-
+        gameManager.EndGame(opponent);
         this.enabled = false;
     }
 
