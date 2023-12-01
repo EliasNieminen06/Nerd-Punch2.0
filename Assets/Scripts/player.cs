@@ -37,6 +37,8 @@ public class player : MonoBehaviour
 
     [SerializeField] private GameManager gameManager;
 
+    [SerializeField] private PlayerUI playerUI;
+
     [SerializeField] private GameObject opponent;
 
     private void Start()
@@ -73,6 +75,8 @@ public class player : MonoBehaviour
                     foreach(Collider2D player in hitPlayers)
                     {
                         player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
+                        playerUI.health = currentHealth;
+                        playerUI.maxHealth = maxHealth;
                     }
                     nextAttackTime = Time.time + 1f / attackRate;
                 }

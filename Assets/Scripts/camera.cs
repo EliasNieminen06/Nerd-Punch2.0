@@ -7,6 +7,8 @@ public class camera : MonoBehaviour
     [SerializeField] private GameObject PlayerOne;
     [SerializeField] private GameObject PlayerTwo;
 
+    [SerializeField] private LayerMask playerLayers;
+
     private float minZoom = 5f;
     private float maxZoom = 10f;
     private float zoomSpeed = 5f;
@@ -25,5 +27,6 @@ public class camera : MonoBehaviour
         float distance = Vector2.Distance(PlayerOne.transform.position, PlayerTwo.transform.position);
         float targetZoom = Mathf.Lerp(minZoom, maxZoom, distance / maxZoom);
         Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, targetZoom, Time.deltaTime * zoomSpeed);
+        
     }
 }
