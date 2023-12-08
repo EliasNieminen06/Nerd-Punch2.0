@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
     public bool gameStarted;
     public bool winnerCam;
     public GameObject winner;
+    public Canvas winnerCanvas;
+    public int p1Wins;
+    public int p2Wins;
 
     private void Start()
     {
@@ -17,6 +20,8 @@ public class GameManager : MonoBehaviour
         scamera.transform.position = new Vector2(0, 50);
         gameStarted = false;
         winnerCam = false;
+        p1Wins = 0;
+        p2Wins = 0;
     }
 
     private void Update()
@@ -45,5 +50,15 @@ public class GameManager : MonoBehaviour
         gameStarted = false;
         scamera.GetComponent<camera>().enabled = false;
         winnerCam = true;
+        winnerCanvas.transform.position = new Vector2(winner.transform.position.x, winner.transform.position.y + 2f);
+        winnerCanvas.enabled = true;
+        if (opponent.gameObject.name == "PlayerOne")
+        {
+            p1Wins += 1;
+        }
+        else
+        {
+            p2Wins += 1;
+        }
     }
 }

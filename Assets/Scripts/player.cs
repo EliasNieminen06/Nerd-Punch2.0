@@ -75,8 +75,6 @@ public class player : MonoBehaviour
                     foreach(Collider2D player in hitPlayers)
                     {
                         player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
-                        playerUI.health = currentHealth;
-                        playerUI.maxHealth = maxHealth;
                     }
                     nextAttackTime = Time.time + 1f / attackRate;
                 }
@@ -142,6 +140,8 @@ public class player : MonoBehaviour
     {
         currentHealth -= damage;
 
+        playerUI.health = currentHealth;
+
         int punchSound = Random.Range(0, punchSounds.Length);
         audioSource.clip = punchSounds[punchSound];
         audioSource.Play();
@@ -169,8 +169,9 @@ public class player : MonoBehaviour
         anim.SetTrigger("hurt");
     }
 
-    private void Die()
+    public void Die()
     {
+        currentHealth -= currentHealth;
         anim.SetBool("isDead", true);
         gameManager.EndGame(opponent);
         this.enabled = false;
