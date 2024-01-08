@@ -3,11 +3,8 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
-    private int currentHealth;
-    private float horizontal;
     private float speed = 4f;
     private float jumpingPower = 8f;
-    private bool isFacingRight = true;
     private float attackRange = 0.5f;
     private int attackDamage = 10;
     private int maxHealth = 100;
@@ -16,8 +13,12 @@ public class player : MonoBehaviour
     private float knockBackForce = 10;
     private float knockBackTimer = 0f;
     private float knockBackTotalTime = 0.2f;
-    private bool knockFromRight;
+    private bool isFacingRight = true;
     private AudioSource audioSource;
+
+    private int currentHealth;
+    private float horizontal;
+    private bool knockFromRight;
     private bool gameStarted;
 
     [SerializeField] private Animator anim;
