@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
     public Canvas winnerCanvas;
     public int p1Wins;
     public int p2Wins;
+    public AudioSource audioSource;
+    public AudioClip winSound;
 
     private void Start()
     {
@@ -46,6 +48,9 @@ public class GameManager : MonoBehaviour
 
     public void EndGame(GameObject opponent)
     {
+        audioSource.clip = winSound;
+        audioSource.volume = 1;
+        audioSource.Play();
         winner = opponent;
         gameStarted = false;
         scamera.GetComponent<camera>().enabled = false;

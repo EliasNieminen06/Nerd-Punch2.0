@@ -694,6 +694,7 @@ MonoBehaviour:
   inputNameHorizontal: Horizontal1
   inputNameJump: Jump1
   inputNameAttack: Attack1
+  inputNameDash: Dash1
   punchSounds:
   - {fileID: 8300000, guid: 421765731f4ab5d46997e11494e7f1c3, type: 3}
   - {fileID: 8300000, guid: d128f0802b7cafa48af603a5a85a817b, type: 3}
@@ -2296,6 +2297,7 @@ MonoBehaviour:
   inputNameHorizontal: Horizontal2
   inputNameJump: Jump2
   inputNameAttack: Attack2
+  inputNameDash: Dash2
   punchSounds:
   - {fileID: 8300000, guid: 421765731f4ab5d46997e11494e7f1c3, type: 3}
   - {fileID: 8300000, guid: d128f0802b7cafa48af603a5a85a817b, type: 3}

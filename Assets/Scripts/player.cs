@@ -10,16 +10,23 @@ public class player : MonoBehaviour
     private int maxHealth = 100;
     private float attackRate = 2f;
     private float nextAttackTime = 0f;
+    private float healRate = 0.2f;
+    private float nextHealTime = 0f;
     private float knockBackForce = 10;
     private float knockBackTimer = 0f;
     private float knockBackTotalTime = 0.2f;
     private bool isFacingRight = true;
     private AudioSource audioSource;
+    private float dashingPower = 24f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 1f;
 
     private int currentHealth;
     private float horizontal;
     private bool knockFromRight;
     private bool gameStarted;
+    private bool canDash = true;
+    private bool isDashing;
 
     [SerializeField] private Animator anim;
 
@@ -33,8 +40,11 @@ public class player : MonoBehaviour
     [SerializeField] private string inputNameHorizontal;
     [SerializeField] private string inputNameJump;
     [SerializeField] private string inputNameAttack;
+    [SerializeField] private string inputNameDash;
 
     [SerializeField] private AudioClip[] punchSounds;
+
+    [SerializeField] private AudioClip dashSound;
 
     [SerializeField] private GameManager gameManager;
 
@@ -53,71 +63,88 @@ public class player : MonoBehaviour
     {
         if (gameStarted)
         {
-            horizontal = Input.GetAxisRaw(inputNameHorizontal);
+            if (!isDashing)
+            {
+                horizontal = Input.GetAxisRaw(inputNameHorizontal);
 
-            if (Input.GetButtonDown(inputNameJump) && IsGrounded())
-            {
-                rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            }
-
-        
-            if (Input.GetButtonUp(inputNameJump) && rb.velocity.y > 0f)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            }
-        
-            if (Time.time >= nextAttackTime)
-            {
-                if (Input.GetButtonDown(inputNameAttack))
+                if (Input.GetButtonDown(inputNameJump) && IsGrounded())
                 {
-                    anim.SetTrigger("attack");
-
-                    Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
-                    foreach(Collider2D player in hitPlayers)
-                    {
-                        player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
-                    }
-                    nextAttackTime = Time.time + 1f / attackRate;
+                    rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
                 }
 
-            }
-        }
-        else
-        {
-            horizontal = 0;
-        }
 
-        Flip();
+                if (Input.GetButtonUp(inputNameJump) && rb.velocity.y > 0f)
+                {
+                    rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                }
+
+                if (Input.GetButtonDown(inputNameDash) && canDash)
+                {
+                    StartCoroutine(Dash());
+                }
+
+                if (Time.time >= nextHealTime && currentHealth < 100)
+                {
+                    currentHealth = currentHealth + 2;
+                    nextHealTime = Time.time + 1f / healRate;
+                }
+
+                if (Time.time >= nextAttackTime)
+                {
+                    if (Input.GetButtonDown(inputNameAttack))
+                    {
+                        anim.SetTrigger("attack");
+
+                        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
+                        foreach (Collider2D player in hitPlayers)
+                        {
+                            player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
+                        }
+                        nextAttackTime = Time.time + 1f / attackRate;
+                    }
+
+                }
+            }
+            else
+            {
+                horizontal = 0;
+            }
+            playerUI.health = currentHealth;
+            Flip();
+        }
         gameStarted = gameManager.gameStarted;
     }
 
     private void FixedUpdate()
     {
-        if (knockBackTimer <= 0)
+        if (!isDashing)
         {
-            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-        }
-        else
-        {
-            if (knockFromRight == true)
+            if (knockBackTimer <= 0)
             {
-                rb.velocity = new Vector2(-knockBackForce, 1);
-                Flip();
+                rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
             }
-            if (knockFromRight == false)
+            else
             {
-                rb.velocity = new Vector2(knockBackForce, 1);
-                Flip();
+                if (knockFromRight == true)
+                {
+                    rb.velocity = new Vector2(-knockBackForce, 1);
+                    Flip();
+                }
+                if (knockFromRight == false)
+                {
+                    rb.velocity = new Vector2(knockBackForce, 1);
+                    Flip();
+                }
+                knockBackTimer -= Time.deltaTime;
             }
-            knockBackTimer -= Time.deltaTime;
-        }
-        if (horizontal != 0f)
-        {
-            this.anim.SetBool("run", true);
-        }
-        else
-        {
-            this.anim.SetBool("run", false);
+            if (horizontal != 0f)
+            {
+                this.anim.SetBool("run", true);
+            }
+            else
+            {
+                this.anim.SetBool("run", false);
+            }
         }
     }
 
@@ -141,10 +168,9 @@ public class player : MonoBehaviour
     {
         currentHealth -= damage;
 
-        playerUI.health = currentHealth;
-
         int punchSound = Random.Range(0, punchSounds.Length);
         audioSource.clip = punchSounds[punchSound];
+        audioSource.volume = 1;
         audioSource.Play();
 
         knockBackTimer = knockBackTotalTime;
@@ -178,10 +204,20 @@ public class player : MonoBehaviour
         this.enabled = false;
     }
 
-    private void OnDrawGizmosSelected()
+    IEnumerator Dash()
     {
-        if (attackPoint == null)
-            return;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0;
+        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        audioSource.clip = dashSound;
+        audioSource.volume = 0.5f;
+        audioSource.Play();
+        yield return new WaitForSeconds(dashingTime);
+        rb.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
     }
 }
