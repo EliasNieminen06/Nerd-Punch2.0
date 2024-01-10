@@ -121,7 +121,14 @@ public class player : MonoBehaviour
         {
             if (knockBackTimer <= 0)
             {
-                rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+                if (gameStarted)
+                {
+                    rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+                }
+                else
+                {
+                    rb.velocity = new Vector2(0, 0);
+                }
             }
             else
             {
@@ -199,6 +206,7 @@ public class player : MonoBehaviour
     public void Die()
     {
         currentHealth -= currentHealth;
+        playerUI.health = 0;
         anim.SetBool("isDead", true);
         gameManager.EndGame(opponent);
         this.enabled = false;
