@@ -27,6 +27,7 @@ public class player : MonoBehaviour
     private bool gameStarted;
     private bool canDash = true;
     private bool isDashing;
+    private Vector2 startPos;
 
     [SerializeField] private Animator anim;
 
@@ -57,6 +58,7 @@ public class player : MonoBehaviour
         currentHealth = maxHealth;
         audioSource = this.GetComponent<AudioSource>();
         gameStarted = false;
+        startPos = transform.position;
     }
 
     void Update()
@@ -208,8 +210,16 @@ public class player : MonoBehaviour
         currentHealth -= currentHealth;
         playerUI.health = 0;
         anim.SetBool("isDead", true);
-        gameManager.EndGame(opponent);
-        this.enabled = false;
+        gameManager.EndRound(opponent);
+    }
+
+    public void respawn()
+    {
+        anim.SetBool("isDead", false);
+        anim.SetTrigger("respawn");
+        currentHealth = maxHealth;
+        playerUI.health = 100;
+        transform.position = startPos;
     }
 
     IEnumerator Dash()

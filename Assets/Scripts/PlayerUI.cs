@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,8 +6,6 @@ public class PlayerUI : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private RectTransform healthBar;
     [SerializeField] private Image barImage;
-    public Color fullColor = Color.white;
-    public Color lowColor = Color.red;
     public int health;
     public int maxHealth;
     public float width;
@@ -33,7 +29,8 @@ public class PlayerUI : MonoBehaviour
         width = percentage * 7f;
         // set the health bar size to width variable's float number
         healthBar.sizeDelta = new Vector2(width, healthBar.sizeDelta.y);
-        barColor = new Color(0, 0, 0, 255);
+        // float colorPercentage = percentage * 2.55f;
+        barColor = new Color(255, percentage, percentage, 255);
         barImage.color = barColor;
     }
 }
