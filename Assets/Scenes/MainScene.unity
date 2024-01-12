@@ -315,6 +315,7 @@ MonoBehaviour:
   beginSound: {fileID: 8300000, guid: 2aee945dc02dc4b61b60d18c9bbeb0fc, type: 3}
   currentRound: 0
   crown: {fileID: 2018920297}
+  musicOut: 0
 --- !u!4 &434807870
 Transform:
   m_ObjectHideFlags: 0
@@ -671,6 +672,7 @@ MonoBehaviour:
   playerLayers:
     serializedVersion: 2
     m_Bits: 64
+  camFollow: 0
 --- !u!1 &593564537
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,6 +956,7 @@ MonoBehaviour:
   gameManager: {fileID: 434807869}
   playerUI: {fileID: 745305666}
   opponent: {fileID: 1865246458}
+  camera: {fileID: 519420028}
 --- !u!70 &704864587
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -2560,6 +2563,7 @@ MonoBehaviour:
   gameManager: {fileID: 434807869}
   playerUI: {fileID: 1051690119}
   opponent: {fileID: 704864583}
+  camera: {fileID: 519420028}
 --- !u!70 &1865246460
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

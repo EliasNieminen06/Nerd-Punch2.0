@@ -52,6 +52,9 @@ public class player : MonoBehaviour
     [SerializeField] private PlayerUI playerUI;
 
     [SerializeField] private GameObject opponent;
+    [SerializeField] private GameObject scamera;
+
+    [SerializeField] private AnimationCurve punchCurve;
 
     private void Start()
     {
@@ -181,6 +184,7 @@ public class player : MonoBehaviour
         audioSource.clip = punchSounds[punchSound];
         audioSource.volume = 1;
         audioSource.Play();
+        scamera.GetComponent<camera>().Shake(1, punchCurve);
 
         knockBackTimer = knockBackTotalTime;
         if(hitPos.x > transform.position.x)

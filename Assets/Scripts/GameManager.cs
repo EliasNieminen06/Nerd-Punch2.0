@@ -25,7 +25,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GM.Start()");
         menu.enabled = true;
-        scamera.GetComponent<camera>().enabled = false;
+        scamera.GetComponent<camera>().camFollow = false;
         scamera.transform.position = new Vector2(0, 50);
         gameStarted = false;
         winnerCam = false;
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
         audioSource.clip = beginSound;
         audioSource.volume = 1;
         audioSource.Play();
-        scamera.GetComponent<camera>().enabled = true;
+        scamera.GetComponent<camera>().camFollow = true;
         gameStarted = true;
     }
 
@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("GM.EndGame()");
         winner = opponent;
         gameStarted = false;
-        scamera.GetComponent<camera>().enabled = false;
+        scamera.GetComponent<camera>().camFollow = false;
         winnerCam = true;
         winnerCanvas.enabled = true;
         winnerCanvas.transform.position = new Vector2(winner.transform.position.x, winner.transform.position.y + 2f);
