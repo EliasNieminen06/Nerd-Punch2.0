@@ -956,7 +956,73 @@ MonoBehaviour:
   gameManager: {fileID: 434807869}
   playerUI: {fileID: 745305666}
   opponent: {fileID: 1865246458}
-  camera: {fileID: 519420028}
+  scamera: {fileID: 519420028}
+  punchCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.7277628
+      outSlope: 0.7277628
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.14583333
+      value: 0.106132075
+      inSlope: -0.26415092
+      outSlope: -0.26415092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.21951221
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.124252185
+      outSlope: -0.124252185
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fallDieCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.47169814
+      outSlope: 0.47169814
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.14999999
+      value: 0.070754714
+      inSlope: -0.26415092
+      outSlope: -0.26415092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.21951221
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.08324084
+      outSlope: -0.08324084
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!70 &704864587
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -2563,7 +2629,73 @@ MonoBehaviour:
   gameManager: {fileID: 434807869}
   playerUI: {fileID: 1051690119}
   opponent: {fileID: 704864583}
-  camera: {fileID: 519420028}
+  scamera: {fileID: 519420028}
+  punchCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.7277628
+      outSlope: 0.7277628
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.14583333
+      value: 0.106132075
+      inSlope: -0.26415092
+      outSlope: -0.26415092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.21951221
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.124252185
+      outSlope: -0.124252185
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fallDieCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.47169814
+      outSlope: 0.47169814
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.14999999
+      value: 0.070754714
+      inSlope: -0.26415092
+      outSlope: -0.26415092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.21951221
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -0.08324084
+      outSlope: -0.08324084
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!70 &1865246460
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

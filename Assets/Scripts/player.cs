@@ -55,6 +55,7 @@ public class player : MonoBehaviour
     [SerializeField] private GameObject scamera;
 
     [SerializeField] private AnimationCurve punchCurve;
+    [SerializeField] private AnimationCurve fallDieCurve;
 
     private void Start()
     {
@@ -224,6 +225,11 @@ public class player : MonoBehaviour
         currentHealth = maxHealth;
         playerUI.health = 100;
         transform.position = startPos;
+    }
+
+    private void onFallDie()
+    {
+        scamera.GetComponent<camera>().Shake(1, fallDieCurve);
     }
 
     IEnumerator Dash()
