@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         {
             scamera.transform.position = new Vector3(winner.transform.position.x, winner.transform.position.y, -10);
         }
-        if (currentRound > 3 || p1Wins == 2 || p2Wins == 2)
+        if (currentRound > 5 || p1Wins == 3 || p2Wins == 3)
         {
             StartCoroutine(RestartGame());
         }

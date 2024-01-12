@@ -5,7 +5,7 @@ public class player : MonoBehaviour
 {
     private float speed = 4f;
     private float jumpingPower = 8f;
-    private float attackRange = 0.5f;
+    private float attackRange = 0.8f;
     private int attackDamage = 10;
     private int maxHealth = 100;
     private float attackRate = 2f;
@@ -56,6 +56,7 @@ public class player : MonoBehaviour
 
     [SerializeField] private AnimationCurve punchCurve;
     [SerializeField] private AnimationCurve fallDieCurve;
+    [SerializeField] private TrailRenderer tr;
 
     private void Start()
     {
@@ -104,7 +105,10 @@ public class player : MonoBehaviour
                         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
                         foreach (Collider2D player in hitPlayers)
                         {
-                            player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
+                            if (player != this.gameObject.GetComponent<Collider2D>())
+                            {
+                                player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
+                            }
                         }
                         nextAttackTime = Time.time + 1f / attackRate;
                     }
@@ -159,6 +163,18 @@ public class player : MonoBehaviour
                 this.anim.SetBool("run", false);
             }
         }
+        if (rb.velocity.y > 10)
+        {
+            anim.SetBool("jump", true);
+        }
+        if (rb.velocity.y < -10)
+        {
+            anim.SetBool("fall", true) ;
+        }
+        else
+        {
+            anim.SetBool("levitate", true);
+        }
     }
 
     private bool IsGrounded()
@@ -188,7 +204,7 @@ public class player : MonoBehaviour
         scamera.GetComponent<camera>().Shake(1, punchCurve);
 
         knockBackTimer = knockBackTotalTime;
-        if(hitPos.x > transform.position.x)
+        if(hitPos.x > (transform.position.x -2))
         {
             knockFromRight = true;
         }
@@ -227,7 +243,7 @@ public class player : MonoBehaviour
         transform.position = startPos;
     }
 
-    private void onFallDie()
+    public void onFallDie()
     {
         scamera.GetComponent<camera>().Shake(1, fallDieCurve);
     }
@@ -242,7 +258,9 @@ public class player : MonoBehaviour
         audioSource.clip = dashSound;
         audioSource.volume = 0.5f;
         audioSource.Play();
+        tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
         rb.gravityScale = originalGravity;
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
