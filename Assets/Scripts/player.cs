@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class player : MonoBehaviour
 {
+    // Static Variables
     private float speed = 4f;
     private float jumpingPower = 8f;
     private float attackRange = 0.8f;
@@ -21,6 +22,7 @@ public class player : MonoBehaviour
     private float dashingTime = 0.2f;
     private float dashingCooldown = 1f;
 
+    // Dynamic Variables
     private int currentHealth;
     private float horizontal;
     private bool knockFromRight;
@@ -29,35 +31,30 @@ public class player : MonoBehaviour
     private bool isDashing;
     private Vector2 startPos;
 
+    // Preference Variables
+    [SerializeField] private Vector2 velocity;
     [SerializeField] private Animator anim;
-
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-
     [SerializeField] private Transform attackPoint;
     [SerializeField] private LayerMask playerLayers;
-
     [SerializeField] private string inputNameHorizontal;
     [SerializeField] private string inputNameJump;
     [SerializeField] private string inputNameAttack;
     [SerializeField] private string inputNameDash;
-
     [SerializeField] private AudioClip[] punchSounds;
-
     [SerializeField] private AudioClip dashSound;
-
     [SerializeField] private GameManager gameManager;
-
     [SerializeField] private PlayerUI playerUI;
-
+    [SerializeField] private GameUI gameUI;
     [SerializeField] private GameObject opponent;
     [SerializeField] private GameObject scamera;
-
     [SerializeField] private AnimationCurve punchCurve;
     [SerializeField] private AnimationCurve fallDieCurve;
     [SerializeField] private TrailRenderer tr;
 
+    // Start
     private void Start()
     {
         currentHealth = maxHealth;
@@ -66,73 +63,117 @@ public class player : MonoBehaviour
         startPos = transform.position;
     }
 
+    // Update
     void Update()
     {
+        // Check if the game has started
         if (gameStarted)
         {
+            // Check if the player is not currently dashing
             if (!isDashing)
             {
+                // Get horizontal input
                 horizontal = Input.GetAxisRaw(inputNameHorizontal);
 
+                // Jump inputt down
                 if (Input.GetButtonDown(inputNameJump) && IsGrounded())
                 {
                     rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
                 }
 
-
+                // Jump input up
                 if (Input.GetButtonUp(inputNameJump) && rb.velocity.y > 0f)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
                 }
 
+                // Dash input
                 if (Input.GetButtonDown(inputNameDash) && canDash)
                 {
                     StartCoroutine(Dash());
                 }
 
+                // Healing by time
                 if (Time.time >= nextHealTime && currentHealth < 100)
                 {
                     currentHealth = currentHealth + 2;
                     nextHealTime = Time.time + 1f / healRate;
                 }
 
+                // Attack cooldown
                 if (Time.time >= nextAttackTime)
                 {
-                    if (Input.GetButtonDown(inputNameAttack))
+                    // Attack input and check if the player is grounded
+                    if (Input.GetButtonDown(inputNameAttack) && IsGrounded())
                     {
+                        // Trigger attack animation
                         anim.SetTrigger("attack");
 
+                        // Check for players inside an area near the player
                         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, playerLayers);
+                        // Loop all the players inside the area
                         foreach (Collider2D player in hitPlayers)
                         {
+                            // Check that the player is different than the current player
                             if (player != this.gameObject.GetComponent<Collider2D>())
                             {
+                                // Trigger the take damage function of the opponent player
                                 player.GetComponent<player>().TakeDamage(attackDamage, transform.position);
                             }
                         }
+                        // Count down the cooldown
                         nextAttackTime = Time.time + 1f / attackRate;
                     }
 
                 }
             }
+            // If danshing do not move
             else
             {
                 horizontal = 0;
             }
+            // Change the PlayerUI health to the player health
             playerUI.health = currentHealth;
+            // Check which player this is and change the health variable in gameUI to be the current health
+            if (this.gameObject.name == "PlayerOne")
+            {
+                gameUI.p1health = currentHealth;
+            }
+            if (this.gameObject.name == "PlayerTwo")
+            {
+                gameUI.p2health = currentHealth;
+            }
+            // Call the flip function
             Flip();
+            // check if player is not grounded and change the animation bool idle to false
+            if (!IsGrounded())
+            {
+                anim.SetBool("idle", false);
+            }
+            else
+            {
+                anim.SetBool("idle", true);
+            }
         }
+        // Change the gameStarted variable in game manager to be true
         gameStarted = gameManager.gameStarted;
+        // Set the velocty variable to be the rigidbody's velocity
+        velocity = rb.velocity;
     }
 
+    // Fixed Update
     private void FixedUpdate()
     {
+        // Check if player is not dashing
         if (!isDashing)
         {
+            // check if not currently taking knockback
             if (knockBackTimer <= 0)
             {
+                // Check if game has started
                 if (gameStarted)
                 {
+                    // Move the player with rigidbody
                     rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
                 }
                 else
@@ -142,8 +183,10 @@ public class player : MonoBehaviour
             }
             else
             {
+                // Check if the knockback is coming from right
                 if (knockFromRight == true)
                 {
+                    // Push the player to opposite direction
                     rb.velocity = new Vector2(-knockBackForce, 1);
                     Flip();
                 }
@@ -152,8 +195,10 @@ public class player : MonoBehaviour
                     rb.velocity = new Vector2(knockBackForce, 1);
                     Flip();
                 }
+                // Count down the knockback timer
                 knockBackTimer -= Time.deltaTime;
             }
+            // Animate running
             if (horizontal != 0f)
             {
                 this.anim.SetBool("run", true);
@@ -163,27 +208,35 @@ public class player : MonoBehaviour
                 this.anim.SetBool("run", false);
             }
         }
-        if (rb.velocity.y > 10)
+
+        // Animate jumping and falling
+        if (!IsGrounded())
         {
-            anim.SetBool("jump", true);
-        }
-        if (rb.velocity.y < -10)
-        {
-            anim.SetBool("fall", true) ;
-        }
-        else
-        {
-            anim.SetBool("levitate", true);
+            if (rb.velocity.y > 1)
+            {
+                anim.SetTrigger("jump");
+            }
+            else if (rb.velocity.y < -1)
+            {
+                anim.SetTrigger("fall");
+            }
+            else
+            {
+                anim.SetTrigger("levitate");
+            }
         }
     }
 
+    // Player Ground Check Function
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
 
+    // Player Flip Function
     private void Flip()
     {
+        // Flip the player to be facing same direction its moving towards
         if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
         {
             isFacingRight = !isFacingRight;
@@ -193,10 +246,12 @@ public class player : MonoBehaviour
         }
     }
 
+    // Player Take Damage Function
     public void TakeDamage(int damage, Vector2 hitPos)
     {
+        // Decrease the health
         currentHealth -= damage;
-
+        // play damage taken sound
         int punchSound = Random.Range(0, punchSounds.Length);
         audioSource.clip = punchSounds[punchSound];
         audioSource.volume = 1;
@@ -212,20 +267,22 @@ public class player : MonoBehaviour
         {
             knockFromRight = false;
         }
-
+        // Invoke hurt animation
         Invoke("hurtAnimation", 0.2f);
-
+        // If health is 0 then die
         if (currentHealth <= 0)
         {
             Die();
         }
     }
 
+    // Player Hurt Animation
     private void hurtAnimation()
     {
         anim.SetTrigger("hurt");
     }
 
+    // Player Death Function
     public void Die()
     {
         currentHealth -= currentHealth;
@@ -234,6 +291,7 @@ public class player : MonoBehaviour
         gameManager.EndRound(opponent);
     }
 
+    // Player Respawn Function
     public void respawn()
     {
         anim.SetBool("isDead", false);
@@ -243,11 +301,13 @@ public class player : MonoBehaviour
         transform.position = startPos;
     }
 
+    // Camera Shake On Fall Animation
     public void onFallDie()
     {
         scamera.GetComponent<camera>().Shake(1, fallDieCurve);
     }
 
+    // Dash Function
     IEnumerator Dash()
     {
         canDash = false;

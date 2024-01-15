@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public int currentRound;
     public Image crown;
     public bool musicOut = false;
+    public Canvas gameUI;
 
     private void Start()
     {
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
         p1Wins = 0;
         p2Wins = 0;
         currentRound = 1;
+        gameUI.enabled = false;
     }
 
     private void Update()
@@ -61,6 +63,7 @@ public class GameManager : MonoBehaviour
         audioSource.Play();
         scamera.GetComponent<camera>().camFollow = true;
         gameStarted = true;
+        gameUI.enabled = true;
     }
 
     public void EndRound(GameObject opponent)
@@ -100,6 +103,7 @@ public class GameManager : MonoBehaviour
         }
         winnerCanvas.enabled = false;
         winnerCam = false;
+        gameUI.enabled = false;
         StartGame();
     }
 
