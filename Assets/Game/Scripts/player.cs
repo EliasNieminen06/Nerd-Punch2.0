@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-[System.Obsolete]
+//using UnityEngine.InputSystem;
 
 public class player : MonoBehaviour
 {
@@ -66,6 +66,10 @@ public class player : MonoBehaviour
         startPos = transform.position;
     }
 
+
+  //  public void OnMove(InputAction.CallbackContext ctx) => movementInput = ctx.ReadValue<Vector2>();
+   
+
     // Update
     void Update()
     {
@@ -77,6 +81,7 @@ public class player : MonoBehaviour
             {
                 // Get horizontal input
                 horizontal = Input.GetAxisRaw(inputNameHorizontal);
+               
 
                 // Jump inputt down
                 if (Input.GetButtonDown(inputNameJump) && IsGrounded())
