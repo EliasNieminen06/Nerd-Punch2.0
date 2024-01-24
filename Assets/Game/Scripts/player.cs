@@ -26,6 +26,7 @@ public class player : MonoBehaviour
     // Dynamic Variables
     private int currentHealth;
     private float horizontal;
+    private float attack;
     private bool knockFromRight;
     private bool gameStarted;
     private bool canDash = true;
@@ -81,7 +82,9 @@ public class player : MonoBehaviour
             {
                 // Get horizontal input
                 horizontal = Input.GetAxisRaw(inputNameHorizontal);
-               
+
+                // Get attack input
+                float attack = Input.GetAxisRaw(inputNameAttack);
 
                 // Jump inputt down
                 if (Input.GetButtonDown(inputNameJump) && IsGrounded())
@@ -112,7 +115,7 @@ public class player : MonoBehaviour
                 if (Time.time >= nextAttackTime)
                 {
                     // Attack input and check if the player is grounded
-                    if (Input.GetButtonDown(inputNameAttack) && IsGrounded())
+                    if (Input.GetButtonDown(inputNameAttack) && IsGrounded() || attack > 0.1)
                     {
                         // Trigger attack animation
                         anim.SetTrigger("attack");

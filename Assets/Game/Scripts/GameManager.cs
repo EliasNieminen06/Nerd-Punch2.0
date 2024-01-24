@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,11 +23,14 @@ public class GameManager : MonoBehaviour
     public Image crown;
     public bool musicOut = false;
     public Canvas gameUI;
+    public Button playB;
+    public Button creditB;
+    public Button closeCreditB;
 
     private void Start()
     {
         Debug.Log("GM.Start()");
-        menu.enabled = true;
+        menu.gameObject.SetActive(true);
         scamera.GetComponent<camera>().camFollow = false;
         scamera.transform.position = new Vector3(0, 10, -10);
         gameStarted = false;
@@ -57,7 +61,7 @@ public class GameManager : MonoBehaviour
     public void PlayButton()
     {
         Debug.Log("GM.PlayButton()");
-        menu.enabled = false;
+        menu.gameObject.SetActive(false);
         StartGame();
     }
 
@@ -66,12 +70,15 @@ public class GameManager : MonoBehaviour
         Debug.Log("GM.PlayButton()");
         creditsMenu.enabled = true;
         menu.enabled = false;
+        closeCreditB.Select();
+        EventSystem.current.SetSelectedGameObject(closeCreditB.gameObject);
     }
 
     public void CloseCreditsButton()
     {
         creditsMenu.enabled = false;
         menu.enabled = true;
+        EventSystem.current.SetSelectedGameObject(playB.gameObject);
     }
 
     public void StartGame()
