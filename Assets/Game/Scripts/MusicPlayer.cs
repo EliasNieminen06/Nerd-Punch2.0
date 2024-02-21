@@ -1,51 +1,47 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MusicPlayer : MonoBehaviour
 {
     public AudioSource audioSource;
     public AudioClip[] musicClips;
+    public AudioClip menuMusic;
     public GameManager gameManager;
-    private float fadeTime = 2f;
+    public bool menuMusicIsPlaying;
+
     private void Start()
     {
-        audioSource.volume = 0;
+        audioSource.volume = 0.2f;
     }
     void Update()
     {
         if (gameManager.gameStarted)
-        {
+        {   
+            if (menuMusicIsPlaying)
+            {
+                menuMusicIsPlaying = false;
+                audioSource.Stop();
+            }
             if (!audioSource.isPlaying)
             {
                 int musicClip = Random.Range(0, musicClips.Length);
                 audioSource.clip = musicClips[musicClip];
                 audioSource.Play();
-                StartCoroutine(FadeIn());
+            }
+        }
+        else
+        {
+            if (!audioSource.isPlaying)
+            {
+                menuMusicIsPlaying = true;
+                audioSource.clip = menuMusic;
+                audioSource.Play();
             }
         }
         if (gameManager.musicOut)
         {
-            StartCoroutine(FadeOut());
-        }
-    }
-    public IEnumerator FadeOut()
-    {
-
-        while (audioSource.volume <= 0.25f)
-        {
-            audioSource.volume -= 0.2f * Time.deltaTime / (fadeTime * 1000);
-
-            yield return null;
-        }
-    }
-    public IEnumerator FadeIn()
-    {
-
-        while (audioSource.volume < 0.20f)
-        {
-            audioSource.volume += 100 * Time.deltaTime / (fadeTime * 1000);
-
-            yield return null;
+            audioSource.Stop();
         }
     }
 }

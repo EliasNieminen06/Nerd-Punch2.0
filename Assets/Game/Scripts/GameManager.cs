@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public int p1Wins;
     public int p2Wins;
     public AudioSource audioSource;
+    public AudioClip buttonClick;
     public AudioClip p1WinSound;
     public AudioClip p2WinSound;
     public AudioClip beginSound;
@@ -26,6 +27,8 @@ public class GameManager : MonoBehaviour
     public Button playB;
     public Button creditB;
     public Button closeCreditB;
+    public GameObject keyHelp;
+    public GameObject conHelp;
 
     private void Start()
     {
@@ -60,30 +63,52 @@ public class GameManager : MonoBehaviour
 
     public void PlayButton()
     {
-        Debug.Log("GM.PlayButton()");
+        buttonClickSound();
         menu.gameObject.SetActive(false);
         StartGame();
     }
 
     public void CreditsButton()
     {
-        Debug.Log("GM.PlayButton()");
+        buttonClickSound();
         creditsMenu.enabled = true;
         menu.enabled = false;
         closeCreditB.Select();
         EventSystem.current.SetSelectedGameObject(closeCreditB.gameObject);
     }
 
+    public void KeyboardButton()
+    {
+        buttonClickSound();
+        conHelp.active = false;
+        keyHelp.active = true;
+    }
+
+    public void ControllerButton()
+    {
+        buttonClickSound();
+        keyHelp.active = false;
+        conHelp.active = true;
+    }
+
     public void CloseCreditsButton()
     {
+        buttonClickSound();
         creditsMenu.enabled = false;
         menu.enabled = true;
         EventSystem.current.SetSelectedGameObject(playB.gameObject);
     }
 
+    public void QuitButton()
+    {
+        buttonClickSound();
+        Application.Quit();
+        UnityEditor.EditorApplication.isPlaying = false;
+    }
+
     public void StartGame()
     {
-        Debug.Log("GM.StartGame()");
+        buttonClickSound();
         audioSource.clip = beginSound;
         audioSource.volume = 1;
         audioSource.Play();
@@ -94,7 +119,6 @@ public class GameManager : MonoBehaviour
 
     public void EndRound(GameObject opponent)
     {
-        Debug.Log("GM.EndGame()");
         winner = opponent;
         gameStarted = false;
         scamera.GetComponent<camera>().camFollow = false;
@@ -121,7 +145,6 @@ public class GameManager : MonoBehaviour
 
     public void RestartMap()
     {
-        Debug.Log("GM.RestartMap()");
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         for (int i = 0; i < players.Length; i++)
         {
@@ -131,6 +154,12 @@ public class GameManager : MonoBehaviour
         winnerCam = false;
         gameUI.enabled = false;
         StartGame();
+    }
+
+    public void buttonClickSound()
+    {
+        audioSource.clip = buttonClick;
+        audioSource.Play();
     }
 
     public IEnumerator RestartGame()
@@ -143,7 +172,6 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator NextRound()
     {
-        Debug.Log("GM.NextRound()");
         yield return new WaitForSeconds(5);
         currentRound++;
         RestartMap();
