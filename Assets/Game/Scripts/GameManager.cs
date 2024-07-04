@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("GM.Start()");
         menu.gameObject.SetActive(true);
         scamera.GetComponent<camera>().camFollow = false;
         scamera.transform.position = new Vector3(0, 10, -10);
@@ -103,7 +102,6 @@ public class GameManager : MonoBehaviour
     {
         buttonClickSound();
         Application.Quit();
-        UnityEditor.EditorApplication.isPlaying = false;
     }
 
     public void StartGame()
@@ -123,8 +121,8 @@ public class GameManager : MonoBehaviour
         gameStarted = false;
         scamera.GetComponent<camera>().camFollow = false;
         winnerCam = true;
-        winnerCanvas.enabled = true;
         winnerCanvas.transform.position = new Vector2(winner.transform.position.x, winner.transform.position.y + 2f);
+        winnerCanvas.enabled = true;
         if (opponent.gameObject.name == "PlayerOne")
         {
             p1Wins += 1;

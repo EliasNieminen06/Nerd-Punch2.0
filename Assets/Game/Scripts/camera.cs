@@ -40,7 +40,6 @@ public class camera : MonoBehaviour
 
     public IEnumerator Shaker(float duration, AnimationCurve curve)
     {
-        Debug.Log("cam.shake()");
         float elapsedTime = 0f;
         while (elapsedTime < duration)
         {
